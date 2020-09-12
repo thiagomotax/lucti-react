@@ -5,7 +5,7 @@ import { colors, Icon } from 'react-native-elements';
 
 import { Button, View, Text, TouchableOpacity, Image } from 'react-native';
 
-import { NavigationContainer, DefaultTheme   } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useTheme } from '@react-navigation/native';
@@ -28,13 +28,17 @@ import Enderecos from './pages/Enderecos';
 
 global.BASE_URL = 'http://192.168.0.102:8095/app/';
 global.AUTHORIZATION = '4484143ee88b64dba8d0e6a39b818c90D';
+global.TIPO_CONTATO =  ((tipo) => {
+  return tipo == 0 ? 'Link' : tipo == 1 ? 'Email' : tipo == 2 ? 'Celular' : '';
+
+});
 
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const NavigationDrawerStructure = (props) => {
-  
+
   //Structure for the navigatin Drawer
   const toggleDrawer = () => {
     //Props to open/close the drawer
@@ -92,6 +96,12 @@ function homeScreenStack({ navigation }) {
         options={{
           title: 'Enderecos', //Set Header Title
         }} />
+      <Stack.Screen //adicionar na stack dessa pagina pra conseguir
+        name="Contatos"
+        component={Contatos}
+        options={{
+          title: 'Contatos', //Set Header Title
+        }} />
     </Stack.Navigator>
   );
 }
@@ -117,13 +127,6 @@ function farmaciaScreenStack({ navigation }) {
           title: 'Home', //Set Header Title
 
         }} />
-      <Stack.Screen
-        name="Contatos"
-        component={Contatos}
-        options={{
-          title: 'Third Page', //Set Header Title
-        }} />
-
     </Stack.Navigator>
   );
 }

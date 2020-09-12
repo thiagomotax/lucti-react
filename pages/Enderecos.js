@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StatusBar, Text, View, TouchableOpacity, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
-import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-
+import { useTheme } from '@react-navigation/native';
 import { Icon } from 'react-native-elements';
 
 
-export default Home = ({ route, navigation }) => {
+export default Enderecos = ({ route, navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const estabelecimento_id = route.params.estabelecimento_id;
+  const { colors } = useTheme();
 
   const Item = ({ item, onPress, style }) => (
     <TouchableHighlight underlayColor={colors.card} activeOpacity={0.4}
-    onPress={onPress} 
-    style={[styles.item, style]}>
+      onPress={onPress}
+      style={[styles.item, style]}>
       <View style={{ flex: 1, flexDirection: 'row' }}>
         <View style={{ width: '90%' }}>
           <Text style={styles.title}>{item.descricao}</Text>
@@ -25,13 +25,10 @@ export default Home = ({ route, navigation }) => {
             name='chevron-right'
             type='font-awesome-5'
             size={20}
-            color='#FFF'
+            color={colors.text}
           />
         </View>
-
-
       </View>
-
     </TouchableHighlight >
   );
 
@@ -53,7 +50,12 @@ export default Home = ({ route, navigation }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      marginTop: StatusBar.currentHeight || 0,
+      justifyContent: "center"
+    },
+    horizontal: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: 10
     },
     item: {
       padding: 10,
@@ -64,21 +66,21 @@ export default Home = ({ route, navigation }) => {
     title: {
       fontSize: 16,
       margin: 5,
-      color: '#FFF'
+      color: colors.text
     },
   });
 
-
   useEffect(() => {
-    fetch('http://192.168.0.102:8095/app/endereco-estabelecimento/?estabelecimento_id='+estabelecimento_id, {
+    let headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'authorization': global.AUTHORIZATION
+    };
+    fetch(`${global.BASE_URL}endereco-estabelecimento/?estabelecimento_id=${estabelecimento_id}`, {
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'authorization': '4484143ee88b64dba8d0e6a39b818c90D',
-        'estabelecimento_id': estabelecimento_id
-      }
+      headers: headers
     })
+
       .then((response) => response.json())
       .then((json) => setData(json.rows))
       .catch((error) => console.error(error))
@@ -86,13 +88,16 @@ export default Home = ({ route, navigation }) => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading ? <ActivityIndicator /> : (
-        <FlatList
-          data={data}
-          keyExtractor={({ id }, index) => id.toString()}
-          renderItem={renderItem}
-        />
-      )}
+      {isLoading ?
+        <View style={[styles.container, styles.horizontal]}>
+          <ActivityIndicator size="large" color={colors.card} />
+        </View> : (
+          <FlatList
+            data={data}
+            keyExtractor={({ id }, index) => id.toString()}
+            renderItem={renderItem}
+          />
+        )}
     </SafeAreaView>
 
   );

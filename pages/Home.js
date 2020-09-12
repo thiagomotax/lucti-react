@@ -25,7 +25,7 @@ export default Home = ({ route, navigation }) => {
         <View style={{ width: '70%' }}>
           <Text style={styles.title}>{item.nome}</Text>
         </View>
-        <View style={{ width: '10%', margin: 5 }}>
+        <View style={{ width: '10%', padding: 5 }}>
           <Icon
             name='chevron-right'
             type='font-awesome-5'
@@ -55,7 +55,12 @@ export default Home = ({ route, navigation }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      marginTop: StatusBar.currentHeight || 0,
+      justifyContent: "center"
+    },
+    horizontal: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: 10
     },
     item: {
       padding: 10,
@@ -87,13 +92,16 @@ export default Home = ({ route, navigation }) => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading ? <ActivityIndicator color={colors.card} /> : (
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={({ id }, index) => id.toString()}
-        />
-      )}
+      {isLoading ? 
+      <View style={[styles.container, styles.horizontal]}>
+        <ActivityIndicator size="large" color={colors.card} />
+      </View> : (
+          <FlatList
+            data={data}
+            renderItem={renderItem}
+            keyExtractor={({ id }, index) => id.toString()}
+          />
+        )}
     </SafeAreaView>
 
   );

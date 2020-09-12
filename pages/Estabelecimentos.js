@@ -24,7 +24,7 @@ export default Estabelecimentos = ({ route, navigation }) => {
         <View style={{ width: '60%' }}>
           <Text style={styles.title}>{item.nome_fantasia}</Text>
           <Text style={styles.title}>{item.categoria_principal}</Text>
-          <Text style={{ color: '#FFFFFF', marginTop: 15, marginLeft: 5 }}>{item.enderecos[0].logradouro}, {item.enderecos[0].bairro} - {item.enderecos[0].numero}</Text>
+          <Text style={styles.title}>{item.enderecos[0].logradouro}, {item.enderecos[0].bairro} - {item.enderecos[0].numero}</Text>
         </View>
         <View style={{ width: '10%', justifyContent: 'center' }}>
           <Icon
@@ -56,7 +56,12 @@ export default Estabelecimentos = ({ route, navigation }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      marginTop: StatusBar.currentHeight || 0,
+      justifyContent: "center"
+    },
+    horizontal: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: 10
     },
     item: {
       borderRadius: 4,
@@ -90,7 +95,10 @@ export default Estabelecimentos = ({ route, navigation }) => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading ? <ActivityIndicator color={colors.card}/> : (
+     {isLoading ? 
+      <View style={[styles.container, styles.horizontal]}>
+        <ActivityIndicator size="large" color={colors.card} />
+      </View> : (
         <FlatList
           data={data}
           renderItem={renderItem}
