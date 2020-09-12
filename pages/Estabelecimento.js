@@ -15,7 +15,7 @@ export default Estabelecimento = ({ route, navigation }) => {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      marginTop: 22,
+      // marginTop: 22,
     },
     modalView: {
       margin: 20,
@@ -82,7 +82,13 @@ export default Estabelecimento = ({ route, navigation }) => {
       fontWeight: '800',
       fontSize: 17,
       color: colors.text
-    }
+    },
+    tinyLogo: {
+      width: 110,
+      height: 100,
+      borderRadius: 3,
+      margin: 1
+    },
   });
 
   const Item = (props, { item, onPress }) => (
@@ -110,6 +116,25 @@ export default Estabelecimento = ({ route, navigation }) => {
         </View>
       </View>
     </TouchableHighlight >
+  );
+
+  const Header = (props) => (
+    <SafeAreaView style={{height: 110}}>
+      <View style={{ flex: 1, flexDirection: 'row', marginHorizontal: 10 }}>
+        <View style={{ width: '30%' }}>
+          <Image
+            style={styles.tinyLogo}
+            source={{
+              uri: data.logo,
+            }}
+          />
+        </View>
+        <View style={{ width: '70%', marginStart: 12 }}>
+          <Text style={{color: 'black', fontWeight: 'bold', fontSize: 18 }}>{data.nome_fantasia}</Text>
+          <Text style={{color: 'black' }}>{data.categoria_principal}</Text>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 
   useEffect(() => {
@@ -156,6 +181,8 @@ export default Estabelecimento = ({ route, navigation }) => {
                 </TouchableWithoutFeedback>
               </Modal>
             </View>
+
+            <Header />
 
             <Item route="Horario" title='Horário de funcionamento' description={data.horario_funcionamento ? data.horario_funcionamento : ''} />
 
