@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StatusBar, Text, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { ActivityIndicator, FlatList, StatusBar, Text, View, TouchableOpacity, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
 import { Icon } from 'react-native-elements';
@@ -11,7 +11,9 @@ export default Home = ({ route, navigation }) => {
   const estabelecimento_id = route.params.estabelecimento_id;
 
   const Item = ({ item, onPress, style }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
+    <TouchableHighlight underlayColor={colors.card} activeOpacity={0.4}
+    onPress={onPress} 
+    style={[styles.item, style]}>
       <View style={{ flex: 1, flexDirection: 'row' }}>
         <View style={{ width: '90%' }}>
           <Text style={styles.title}>{item.descricao}</Text>
@@ -30,7 +32,7 @@ export default Home = ({ route, navigation }) => {
 
       </View>
 
-    </TouchableOpacity >
+    </TouchableHighlight >
   );
 
   const renderItem = ({ item }) => {

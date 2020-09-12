@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StatusBar, Image, Text, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-
-import { Icon } from 'react-native-elements';
+import { ActivityIndicator, FlatList, StatusBar, Image, Text, View, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
+import { useTheme } from '@react-navigation/native';
+import { colors, Icon } from 'react-native-elements';
+import { color } from 'react-native-reanimated';
 
 
 export default Estabelecimento = ({ route, navigation }) => {
-
-
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const { colors } = useTheme();
   const estabelecimento_id = route.params.estabelecimento_id;
-
-
 
   const styles = StyleSheet.create({
     container: {
@@ -25,7 +22,7 @@ export default Estabelecimento = ({ route, navigation }) => {
       marginRight: 10,
       marginBottom: 5,
       padding: 5,
-      backgroundColor: '#478481',
+      backgroundColor: colors.card,
       height: 80,
       padding: 15
     },
@@ -35,130 +32,70 @@ export default Estabelecimento = ({ route, navigation }) => {
     title: {
       margin: 3,
       fontSize: 16,
-      color: '#FFF'
+      color: colors.text
     },
     label: {
       fontWeight: '200',
       fontSize: 13,
-      color: '#FFF'
+      color: colors.text
     },
     description: {
       fontWeight: '800',
       fontSize: 17,
-      color: '#FFF'
+      color: colors.text
     }
   });
 
+  const Item = (props, { item, onPress }) => (
+    <TouchableHighlight underlayColor={colors.card} activeOpacity={0.4}
+    style={[styles.item]} onPress={() =>
+      navigation.push(props.route, {
+        estabelecimento_id: estabelecimento_id
+      })
+    }>
+      <View style={{ flex: 1, flexDirection: 'row' }}>
+        <View style={{ width: '90%' }}>
+          <Text style={[styles.label]}>{props.title ? props.title : ''}</Text>
+          <Text style={[styles.description]}>{props.description ? props.description : ''}</Text>
+        </View>
+        <View style={{ width: '10%', justifyContent: 'center' }}>
+          <Icon
+            name='chevron-right'
+            type='font-awesome-5'
+            size={20}
+            color={colors.text}
+          />
+        </View>
+      </View>
+    </TouchableHighlight >
+  );
+
 
   useEffect(() => {
-    fetch('http://192.168.0.102:8095/app/estabelecimento/' + estabelecimento_id + '?fields=categoria,enderecos,contatos', {
+    let fields = 'estabelecimento,categorias_estabelecimento,enderecos';
+    let headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'authorization': global.AUTHORIZATION
+    };
+    fetch(`${global.BASE_URL}estabelecimento/${estabelecimento_id}?fields=${fields}`, {
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'authorization': '4484143ee88b64dba8d0e6a39b818c90D',
-      },
+      headers: headers
     })
-      .then(response => response.json())
-      .then(response => {
-        setData(response);
-
-      })
-    // .then((json) => setData(json.rows))
-    // .catch((error) => console.error(error))
-    // .finally(() => setLoading(false));
+      .then((response) => response.json())
+      .then((json) => setData(json))
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={[styles.item]} onPress={() =>
-        navigation.push('Estabelecimentos', {
-          estabelecimento_id: estabelecimento_id
-        })
-      }>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ width: '90%' }}>
-            <Text style={[styles.label]}>Horário de funcionamento</Text>
-            <Text style={[styles.description]}>{data.horario_funcionamento ? data.horario_funcionamento : ''}</Text>
+      <Item route="Enderecos" title='Horário de funcionamento' description={data.horario_funcionamento ? data.horario_funcionamento : ''} />
 
-          </View>
-          <View style={{ width: '10%', justifyContent: 'center' }}>
-            <Icon
-              name='chevron-right'
-              type='font-awesome-5'
-              size={20}
-              color='#FFF'
-            />
-          </View>
-        </View>
-      </TouchableOpacity >
+      <Item route="Enderecos" title={data.enderecos ? `Enderecos (${data.enderecos.length})` : 'Endereços'} description={data.enderecos ? `${data.enderecos[0].logradouro}, ${data.enderecos[0].bairro} - ${data.enderecos[0].numero}` : 'Não há endereços cadastrados'} />
 
-      <TouchableOpacity style={[styles.item]} onPress={() =>
-        navigation.push('Enderecos', {
-          estabelecimento_id: estabelecimento_id
-        })
-      }>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ width: '90%' }}>
-            <Text style={[styles.label]}>Endereços ({data.enderecos ? data.enderecos.length : ''})</Text>
-            <Text style={[styles.description]}>{data.enderecos ? (data.enderecos[0].logradouro, data.enderecos[0].bairro) : ''}</Text>
+      <Item route="Enderecos" title={data.contatos  ?  `Contatos (${data.contatos.length})` : 'Contatos'} description={data.contatos ? 'Comunique-se conosco' : 'Não há contatos cadastrados'}/>
 
-          </View>
-          <View style={{ width: '10%', justifyContent: 'center' }}>
-            <Icon
-              name='chevron-right'
-              type='font-awesome-5'
-              size={20}
-              color='#FFF'
-            />
-          </View>
-        </View>
-      </TouchableOpacity >
-
-      <TouchableOpacity style={[styles.item]} onPress={() =>
-        navigation.push('Estabelecimentos', {
-          estabelecimento_id: estabelecimento_id
-        })
-      }>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ width: '90%' }}>
-            <Text style={[styles.label]}>Contatos ({data.contatos ? data.contatos.length : ''})</Text>
-            <Text style={[styles.description]}>{data.contatos ? 'Comunique-se conosco' : ''}</Text>
-
-          </View>
-          <View style={{ width: '10%', justifyContent: 'center' }}>
-            <Icon
-              name='chevron-right'
-              type='font-awesome-5'
-              size={20}
-              color='#FFF'
-            />
-          </View>
-        </View>
-      </TouchableOpacity >
-
-      <TouchableOpacity style={[styles.item]} onPress={() =>
-        navigation.push('Estabelecimentos', {
-          estabelecimento_id: estabelecimento_id
-        })
-      }>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ width: '90%' }}>
-            <Text style={[styles.label]}>Catálogo</Text>
-            <Text style={[styles.description]}>{data ? 'Acesse o catálogo' : ''}</Text>
-
-          </View>
-          <View style={{ width: '10%', justifyContent: 'center' }}>
-            <Icon
-              name='chevron-right'
-              type='font-awesome-5'
-              size={20}
-              color='#FFF'
-            />
-          </View>
-        </View>
-      </TouchableOpacity >
-
-      {/* <Item titulo="Content" mensagem="Message" /> */}
+      <Item route="Enderecos" title='Catálogo' description='Acesse nosso catálogo' />
     </SafeAreaView>
 
   );

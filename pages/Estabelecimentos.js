@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StatusBar, Image, Text, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-
+import { ActivityIndicator, FlatList, StatusBar, Image, Text, View, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 import { Icon } from 'react-native-elements';
 
-
 export default Estabelecimentos = ({ route, navigation }) => {
-
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const { colors } = useTheme();
   const categoria_id = route.params.categoria_id;
 
   const Item = ({ item, onPress, style }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
+    <TouchableHighlight underlayColor={colors.card} activeOpacity={0.4}
+    onPress={onPress} style={[styles.item, style]}>
       <View style={{ flex: 1, flexDirection: 'row' }}>
         <View style={{ width: '30%' }}>
           <Image
-            style={{width: 100, height: 100}}
+            style={{ width: 100, height: 100 }}
             source={{
               uri: item.logo
             }}
@@ -25,25 +24,22 @@ export default Estabelecimentos = ({ route, navigation }) => {
         <View style={{ width: '60%' }}>
           <Text style={styles.title}>{item.nome_fantasia}</Text>
           <Text style={styles.title}>{item.categoria_principal}</Text>
-          <Text style={{marginTop: 15, marginLeft: 5, color: '#FFF'}}>{item.enderecos[0].logradouro}, {item.enderecos[0].bairro} - {item.enderecos[0].numero}</Text>
+          <Text style={{ color: '#FFFFFF', marginTop: 15, marginLeft: 5 }}>{item.enderecos[0].logradouro}, {item.enderecos[0].bairro} - {item.enderecos[0].numero}</Text>
         </View>
         <View style={{ width: '10%', justifyContent: 'center' }}>
           <Icon
             name='chevron-right'
             type='font-awesome-5'
             size={20}
-            color='#FFF'
+            color={colors.text}
           />
         </View>
-
-
       </View>
-      {/* <Text>{categoria_id}</Text> */}
-    </TouchableOpacity >
+    </TouchableHighlight >
   );
 
   const renderItem = ({ item }) => {
-    const backgroundColor = "#478481";
+    const backgroundColor = colors.card;
     return (
       <Item
         item={item}
@@ -76,18 +72,16 @@ export default Estabelecimentos = ({ route, navigation }) => {
     },
   });
 
-
   useEffect(() => {
-    fetch('http://192.168.0.102:8095/app/estabelecimento/?categoria_id=' + categoria_id + '&fields=estabelecimento,categorias_estabelecimento,enderecos', {
+    let fields = 'estabelecimento,categorias_estabelecimento,enderecos';
+    let headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'authorization': global.AUTHORIZATION
+    };
+    fetch(`${global.BASE_URL}estabelecimento/?categoria_id=${categoria_id}'&fields=${fields}`, {
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'authorization': '4484143ee88b64dba8d0e6a39b818c90D',
-        // 'categoria_id': parseInt(categoria_id),
-        // 'fields': "estabelecimento,categorias_estabelecimento,enderecos",
-        // 'columns': "categoria_principal",
-      },
+      headers: headers
     })
       .then((response) => response.json())
       .then((json) => setData(json.rows))
@@ -96,11 +90,11 @@ export default Estabelecimentos = ({ route, navigation }) => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading ? <ActivityIndicator /> : (
+      {isLoading ? <ActivityIndicator color={colors.card}/> : (
         <FlatList
           data={data}
-          keyExtractor={({ id }, index) => id.toString()}
           renderItem={renderItem}
+          keyExtractor={({ id }, index) => id.toString()}
         />
       )}
     </SafeAreaView>

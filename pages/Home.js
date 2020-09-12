@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StatusBar, Text, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-
+import { ActivityIndicator, FlatList, StatusBar, Text, TouchableHighlight, View, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { useTheme } from '@react-navigation/native';
 
 
 export default Home = ({ route, navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const { colors } = useTheme();
 
   const Item = ({ item, onPress, style }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
+    <TouchableHighlight underlayColor={colors.card} activeOpacity={0.4}
+      onPress={onPress} style={[styles.item, style]}>
       <View style={{ flex: 1, flexDirection: 'row' }}>
         <View style={{ width: '20%' }}>
           <Icon
             name={item.icone_nome}
             type='font-awesome-5'
             size={20}
-            color='#478481'
-            containerStyle={{ backgroundColor: '#E5F2ED', padding: 5, width: '80%', borderRadius: 5 }}
+            color={colors.card}
+            containerStyle={{ backgroundColor: colors.background, padding: 5, width: '80%', borderRadius: 5 }}
           />
         </View>
         <View style={{ width: '70%' }}>
@@ -29,18 +30,15 @@ export default Home = ({ route, navigation }) => {
             name='chevron-right'
             type='font-awesome-5'
             size={20}
-            color='#FFF'
+            color={colors.background}
           />
         </View>
-
-
       </View>
-
-    </TouchableOpacity >
+    </TouchableHighlight >
   );
 
   const renderItem = ({ item }) => {
-    const backgroundColor = "#478481";
+    const backgroundColor = colors.card;
     return (
       <Item
         item={item}
@@ -72,15 +70,15 @@ export default Home = ({ route, navigation }) => {
     },
   });
 
-
   useEffect(() => {
-    fetch('http://192.168.0.102:8095/app/categoria', {
+    let headers = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'authorization': global.AUTHORIZATION
+    };
+    fetch(`${global.BASE_URL}categoria`, {
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'authorization': '4484143ee88b64dba8d0e6a39b818c90D'
-      }
+      headers: headers
     })
       .then((response) => response.json())
       .then((json) => setData(json.rows))
@@ -89,14 +87,15 @@ export default Home = ({ route, navigation }) => {
   }, []);
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading ? <ActivityIndicator /> : (
+      {isLoading ? <ActivityIndicator color={colors.card} /> : (
         <FlatList
           data={data}
-          keyExtractor={({ id }, index) => id.toString()}
           renderItem={renderItem}
+          keyExtractor={({ id }, index) => id.toString()}
         />
       )}
     </SafeAreaView>
 
   );
+
 };

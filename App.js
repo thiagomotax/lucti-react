@@ -1,15 +1,24 @@
 import 'react-native-gesture-handler';
 
 import * as React from 'react';
-import { Icon } from 'react-native-elements';
+import { colors, Icon } from 'react-native-elements';
 
 import { Button, View, Text, TouchableOpacity, Image } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme   } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { useTheme } from '@react-navigation/native';
 
-
+const MyTheme = {
+  colors: {
+    // primary: '#478481',
+    background: '#FFFFFF',
+    card: '#478481',
+    text: '#FFFFFF',
+    border: 'rgb(199, 199, 204)',
+  },
+};
 import Home from './pages/Home';
 import Farmacias from './pages/Farmacias';
 import Contatos from './pages/Contatos';
@@ -17,10 +26,15 @@ import Estabelecimentos from './pages/Estabelecimentos';
 import Estabelecimento from './pages/Estabelecimento';
 import Enderecos from './pages/Enderecos';
 
+global.BASE_URL = 'http://192.168.0.102:8095/app/';
+global.AUTHORIZATION = '4484143ee88b64dba8d0e6a39b818c90D';
+
+
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const NavigationDrawerStructure = (props) => {
+  
   //Structure for the navigatin Drawer
   const toggleDrawer = () => {
     //Props to open/close the drawer
@@ -41,6 +55,7 @@ const NavigationDrawerStructure = (props) => {
 }
 
 function homeScreenStack({ navigation }) {
+  const { colors } = useTheme();
   return (
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
@@ -50,7 +65,7 @@ function homeScreenStack({ navigation }) {
           title: 'Lucti', //Set Header Title
           headerLeft: () => <NavigationDrawerStructure navigationProps={navigation} />,
           headerStyle: {
-            backgroundColor: '#478481', //Set Header color
+            backgroundColor: colors.card, //Set Header color
           },
           headerTintColor: '#fff', //Set Header text color
           headerTitleStyle: {
@@ -116,7 +131,7 @@ function farmaciaScreenStack({ navigation }) {
 function App() {
   return (
 
-    <NavigationContainer>
+    <NavigationContainer theme={MyTheme}>
       <Drawer.Navigator
         drawerContentOptions={{
           activeTintColor: '#e91e63',
