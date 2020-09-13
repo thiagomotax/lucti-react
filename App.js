@@ -3,12 +3,13 @@ import 'react-native-gesture-handler';
 import * as React from 'react';
 import { colors, Icon } from 'react-native-elements';
 
-import { Button, View, Text, TouchableOpacity, Image } from 'react-native';
+import { Button, View, Text, TouchableOpacity, Share, Image } from 'react-native';
 
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useTheme } from '@react-navigation/native';
+// import shareComponent from './pages/components/share'; //export default nao precisa de {} pq importa todo component
 
 const MyTheme = {
   colors: {
@@ -38,6 +39,8 @@ global.TIPO_CONTATO = ((tipo) => {
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+
+
 
 const NavigationDrawerStructure = (props) => {
 
@@ -86,7 +89,7 @@ function homeScreenStack({ navigation }) {
               >
                 <Icon type="font-awesome-5" name="map-marker-alt" color="white" />
               </TouchableOpacity>
-              
+
             </View>
           )
 
@@ -98,14 +101,29 @@ function homeScreenStack({ navigation }) {
         component={Estabelecimentos}
         options={{
           title: 'Estabelecimentos', //Set Header Title
-
         }} />
-      <Stack.Screen //adicionar na stack dessa pagina pra conseguir
+      {/* <Stack.Screen //adicionar na stack dessa pagina pra conseguir
         name="Estabelecimento"
         component={Estabelecimento}
-        options={{
+        options={({ navigation, route }) => ({
           title: 'Estabelecimento', //Set Header Title
-        }} />
+          headerRight: () => (
+            <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingRight: 10, width: 120 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('Localidades')
+                }
+              >
+                <Icon type="font-awesome-5" name="share-alt" color="white" />
+              </TouchableOpacity>
+
+            </View>
+          )
+         )} /> */}
+      <Stack.Screen
+        name="Estabelecimento"
+        component={Estabelecimento}
+      />
       <Stack.Screen //adicionar na stack dessa pagina pra conseguir
         name="Enderecos"
         component={Enderecos}
@@ -118,13 +136,13 @@ function homeScreenStack({ navigation }) {
         options={{
           title: 'Contatos', //Set Header Title
         }} />
-        <Stack.Screen //adicionar na stack dessa pagina pra conseguir
+      <Stack.Screen //adicionar na stack dessa pagina pra conseguir
         name="Localidades"
         component={Localidades}
         options={{
           title: 'Localidades', //Set Header Title
         }} />
-    </Stack.Navigator>
+    </Stack.Navigator >
   );
 }
 
@@ -197,7 +215,7 @@ function App() {
               />
             )
           }}
-          component={homeScreenStack} />
+          component={Home} />
         <Drawer.Screen
           name="Farmacias"
           options={{

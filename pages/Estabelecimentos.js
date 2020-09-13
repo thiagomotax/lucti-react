@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StatusBar, Image, Text, View, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
+import { ActivityIndicator, FlatList, StatusBar, Image, TouchableOpacity, Text, View, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Icon } from 'react-native-elements';
 
@@ -92,6 +92,23 @@ export default Estabelecimentos = ({ route, navigation }) => {
       .then((json) => setData(json.rows))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
+      navigation.setOptions({
+        headerRight: () => (
+          <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingRight: 10, width: 120 }}>
+            <TouchableOpacity
+              // onPress={() => (
+              //   // Share.share({
+              //   //   message:
+              //   //     `${json.nome_fantasia} | Recomendo o estabelecimento ${json.nome_fantasia}`,
+              //   // }))
+              // }
+            >
+              <Icon type="font-awesome-5" name="search" color="white" />
+            </TouchableOpacity>
+
+          </View>
+        ),
+      });
   }, []);
   return (
     <SafeAreaView style={styles.container}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, FlatList, StatusBar, TouchableWithoutFeedback, Image, Text, View, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
+import { ActivityIndicator, Modal, FlatList, StatusBar, Share, Button, TouchableOpacity, TouchableWithoutFeedback, Image, Text, View, TouchableHighlight, StyleSheet, SafeAreaView } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Icon } from 'react-native-elements';
 
@@ -9,6 +9,10 @@ export default Estabelecimento = ({ route, navigation }) => {
   const { colors } = useTheme();
   const estabelecimento_id = route.params.estabelecimento_id;
   const [modalVisible, setModalVisible] = useState(false);
+
+  React.useLayoutEffect(() => {
+
+  }, [navigation]);
 
   const styles = StyleSheet.create({
     centeredView: {
@@ -88,9 +92,11 @@ export default Estabelecimento = ({ route, navigation }) => {
       height: 100,
       borderRadius: 3,
       margin: 1
-      
+
     },
   });
+
+
 
   const Item = (props, { item, onPress }) => (
     <TouchableHighlight underlayColor={colors.card} activeOpacity={0.4}
@@ -120,7 +126,7 @@ export default Estabelecimento = ({ route, navigation }) => {
   );
 
   const Header = (props) => (
-    <SafeAreaView style={{height: 110}}>
+    <SafeAreaView style={{ height: 110 }}>
       <View style={{ flex: 1, flexDirection: 'row', marginHorizontal: 10 }}>
         <View style={{ width: '30%' }}>
           <Image
@@ -131,14 +137,16 @@ export default Estabelecimento = ({ route, navigation }) => {
           />
         </View>
         <View style={{ width: '70%', marginStart: 12 }}>
-          <Text style={{color: 'black', fontWeight: 'bold', fontSize: 18 }}>{data.nome_fantasia}</Text>
-          <Text style={{color: 'black' }}>{data.categoria_principal}</Text>
+          <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 18 }}>{data.nome_fantasia}</Text>
+          <Text style={{ color: 'black' }}>{data.categoria_principal}</Text>
         </View>
       </View>
     </SafeAreaView>
   );
 
   useEffect(() => {
+
+
     let fields = 'estabelecimento,categorias_estabelecimento,enderecos,contatos';
     let headers = {
       Accept: 'application/json',
@@ -150,7 +158,27 @@ export default Estabelecimento = ({ route, navigation }) => {
       headers: headers
     })
       .then((response) => response.json())
-      .then((json) => setData(json))
+      .then((json) => {
+        setData(json);
+        navigation.setOptions({
+          title: json.nome_fantasia,
+          headerRight: () => (
+            <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingRight: 10, width: 120 }}>
+              <TouchableOpacity
+                onPress={() => (
+                  Share.share({
+                    message:
+                      `${json.nome_fantasia} | Recomendo o estabelecimento ${json.nome_fantasia}`,
+                  }))
+                }
+              >
+                <Icon type="font-awesome-5" name="share-alt" color="white" />
+              </TouchableOpacity>
+
+            </View>
+          ),
+        });
+      })
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
