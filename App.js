@@ -25,10 +25,12 @@ import Contatos from './pages/Contatos';
 import Estabelecimentos from './pages/Estabelecimentos';
 import Estabelecimento from './pages/Estabelecimento';
 import Enderecos from './pages/Enderecos';
+import Localidades from './pages/Localidades';
+
 
 global.BASE_URL = 'http://192.168.0.102:8095/app/';
 global.AUTHORIZATION = '4484143ee88b64dba8d0e6a39b818c90D';
-global.TIPO_CONTATO =  ((tipo) => {
+global.TIPO_CONTATO = ((tipo) => {
   return tipo == 0 ? 'Link' : tipo == 1 ? 'Email' : tipo == 2 ? 'Celular' : '';
 
 });
@@ -75,6 +77,20 @@ function homeScreenStack({ navigation }) {
           headerTitleStyle: {
             fontWeight: 'bold', //Set Header text style
           },
+          headerRight: () => (
+            <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingRight: 10, width: 120 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('Localidades')
+                }
+              >
+                <Icon type="font-awesome-5" name="map-marker-alt" color="white" />
+              </TouchableOpacity>
+              
+            </View>
+          )
+
+
         }}
       />
       <Stack.Screen //adicionar na stack dessa pagina pra conseguir
@@ -101,6 +117,12 @@ function homeScreenStack({ navigation }) {
         component={Contatos}
         options={{
           title: 'Contatos', //Set Header Title
+        }} />
+        <Stack.Screen //adicionar na stack dessa pagina pra conseguir
+        name="Localidades"
+        component={Localidades}
+        options={{
+          title: 'Localidades', //Set Header Title
         }} />
     </Stack.Navigator>
   );
@@ -175,7 +197,7 @@ function App() {
               />
             )
           }}
-          component={farmaciaScreenStack} />
+          component={homeScreenStack} />
         <Drawer.Screen
           name="Farmacias"
           options={{

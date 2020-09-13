@@ -3,12 +3,22 @@ import { ActivityIndicator, FlatList, StatusBar, Text, View, TouchableOpacity, S
 import { useTheme } from '@react-navigation/native';
 import { Icon } from 'react-native-elements';
 import _ from 'lodash';
+// import { AsyncStorage } from 'react-native';
 
+const storeData = async (id) => {
+  try {
+    await AsyncStorage.setItem(
+      'localidade_id',
+      id
+    );
+  } catch (error) {
+    // Error saving data
+  }
+};
 
 export default Contatos = ({ route, navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const estabelecimento_id = route.params.estabelecimento_id;
   const { colors } = useTheme();
 
   const Item = ({ item, onPress, style }) => (
@@ -37,9 +47,8 @@ export default Contatos = ({ route, navigation }) => {
       <Item
         item={item}
         onPress={() =>
-          navigation.push('Estabelecimentos', {
-            categoria_id: item.id
-          })
+          console.log("item id eh", item.id)
+          // storeData(item.id)
         }
         style={{ backgroundColor }}
       />
@@ -73,52 +82,51 @@ export default Contatos = ({ route, navigation }) => {
       backgroundColor: "#fff",
       color: 'gray'
     },
-    
+
   });
 
-  function getNomeContatos(groupTipoContatos) {
-    let contatos = [];
-    _.map(groupTipoContatos, contato => {
-      contatos.push(contato.valor);
+  function getCidades(groupEstado) {
+    let cidades = [];
+    _.map(groupEstado, cidade => {
+      cidades.push(cidade.nome);
     });
-    return contatos;
+    return cidades;
   }
 
   useEffect(() => {
-    let fields = 'tipo_contato';
+    let fields = 'cidade';
     let headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
       'authorization': global.AUTHORIZATION
     };
-    fetch(`${global.BASE_URL}contato/?estabelecimento_id=${estabelecimento_id}'&fields=${fields}`, {
+    fetch(`${global.BASE_URL}localidade/?fields=${fields}`, {
       method: 'GET',
       headers: headers
     })
       .then((response) => response.json())
       .then((json) => {
-        var contatosAux = [];
-        var groupTiposContato = [];
-        var tiposContatosAux = [];
         let data = json.rows;
+        var cidadesAux = [];
+        var estadosAux = [];
 
         _.map(data, obj => {
-          obj.tipo = obj.tipo_contato.tipo
-          contatosAux.push(obj);
+          obj.cidade.localidade_id = obj.id;
+          cidadesAux.push(obj.cidade);
         });
 
-        var groupTiposContato = _.groupBy(data, "tipo");
-
-        console.log(groupTiposContato)
-
-        for (var prop in groupTiposContato) {
-          tiposContatosAux.push({
-            title: parseInt(groupTiposContato[prop][0].tipo),
-            data: getNomeContatos(groupTiposContato[prop])
+        var groupEstado = _.groupBy(cidadesAux, "estado_id");
+        for (var prop in groupEstado) {
+          estadosAux.push({
+            title: groupEstado[prop][0].estado.nome,
+            data: getCidades(groupEstado[prop])
           })
         }
-        setData(tiposContatosAux);
+        estadosAux = _.orderBy(estadosAux, ['nomeEstado'], ['asc']);
+
+        setData(estadosAux);
         setLoading(false);
+        console.log(estadosAux)
       })
       .catch((error) => {
         console.error(error);
@@ -136,7 +144,7 @@ export default Contatos = ({ route, navigation }) => {
             keyExtractor={(item, index) => item + index}
             renderItem={renderItem}
             renderSectionHeader={({ section: { title }, }) => (
-              <Text style={styles.header}>{globalThis.TIPO_CONTATO(title)}</Text>
+              <Text style={styles.header}>{title}</Text>
             )}
           />
 

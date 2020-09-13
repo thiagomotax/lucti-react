@@ -88,6 +88,7 @@ export default Estabelecimento = ({ route, navigation }) => {
       height: 100,
       borderRadius: 3,
       margin: 1
+      
     },
   });
 
